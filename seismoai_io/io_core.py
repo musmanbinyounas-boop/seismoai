@@ -156,3 +156,91 @@ def load_folder(folder_path: str) -> list:
 
     return results
 
+def normalize_traces(traces: np.ndarray,
+                     method: str = 'zscore') -> np.ndarray:
+    """Normalize seismic trace amplitudes.
+
+    Seismic traces can have vastly different amplitude scales.
+    Normalization brings them to a comparable range, which is
+    essential for visualization (so loud traces don't dominate
+    the plot) and machine learning (so features are on similar
+    scales).
+
+    Three methods are available:
+    - 'minmax': scales each trace to [0, 1] range
+    - 'zscore': subtracts mean, divides by std (mean=0, std=1)
+    - 'trace_max': divides by the maximum absolute amplitude
+
+    Dead traces (all zeros) are handled safely — they stay as zeros
+    instead of causing division-by-zero errors.
+
+    Parameters
+    ----------
+    traces : np.ndarray
+        2D array of shape (n_traces, n_samples).
+    method : str
+        One of: 'minmax', 'zscore', 'trace_max'.
+
+    Returns
+    -------
+    np.ndarray
+        Normalized traces, same shape as input, dtype float64.
+
+    Raises
+    ------
+    ValueError
+        If method is not one of the three valid options.
+        If traces is not a 2D array.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> traces = np.array([[0, 5, -10, 3]], dtype=np.float32)
+    >>> normalize_traces(traces, method='trace_max')
+    array([[ 0. ,  0.5, -1. ,  0.3]])
+    """
+    # Step 1: Validate inputs
+    if traces.ndim != 2:
+        raise ValueError(
+            f"Expected 2D array, got {traces.ndim}D"
+        )
+
+    valid_methods = ('minmax', 'zscore', 'trace_max')
+    if method not in valid_methods:
+        raise ValueError(
+            f"method must be one of {valid_methods}, got '{method}'"
+        )
+
+    # Step 2: Create output array (float64 for precision)
+    result = np.zeros_like(traces, dtype=np.float64)
+
+    # Step 3: Normalize each trace independently
+    for i in range(traces.shape[0]):
+        tr = traces[i].astype(np.float64)
+
+        if method == 'minmax':
+            # Scale to [0, 1]: subtract min, divide by range
+            mn, mx = tr.min(), tr.max()
+            if mx - mn == 0:
+                # Dead trace or constant — avoid division by zero
+                result[i] = 0.0
+            else:
+                result[i] = (tr - mn) / (mx - mn)
+
+        elif method == 'zscore':
+            # Standard score: subtract mean, divide by std dev
+            mu, sigma = tr.mean(), tr.std()
+            if sigma == 0:
+                result[i] = 0.0
+            else:
+                result[i] = (tr - mu) / sigma
+
+        elif method == 'trace_max':
+            # Divide by peak absolute amplitude
+            mx = np.max(np.abs(tr))
+            if mx == 0:
+                result[i] = 0.0
+            else:
+                result[i] = tr / mx
+
+    return result

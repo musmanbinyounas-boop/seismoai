@@ -65,3 +65,44 @@ class TestLoadFolder:
         with pytest.raises(FileNotFoundError):
             load_folder("this_folder_does_not_exist")
 
+
+# ============================================================
+# Tests for normalize_traces()
+# ============================================================
+class TestNormalizeTraces:
+    """Tests for the normalize_traces function."""
+
+    def test_zscore_produces_zero_mean_unit_std(self):
+        """After zscore normalization, each trace should have
+        mean approximately 0 and std approximately 1."""
+        traces = np.random.randn(5, 100).astype(np.float32)
+        normed = normalize_traces(traces, method='zscore')
+        for i in range(5):
+            assert abs(normed[i].mean()) < 1e-10
+            assert abs(normed[i].std() - 1.0) < 1e-10
+
+    def test_minmax_produces_01_range(self):
+        """After minmax normalization, values should be in [0, 1]."""
+        traces = np.random.randn(5, 100).astype(np.float32)
+        normed = normalize_traces(traces, method='minmax')
+        for i in range(5):
+            assert normed[i].min() >= -1e-10
+            assert normed[i].max() <= 1.0 + 1e-10
+
+    def test_trace_max_produces_minus1_to_1(self):
+        """After trace_max normalization, the peak value should be
+        +1 or -1."""
+        traces = np.array([[0, 5, -10, 3]], dtype=np.float32)
+        normed = normalize_traces(traces, method='trace_max')
+        assert abs(normed[0, 2] - (-1.0)) < 1e-10
+
+    def test_dead_trace_stays_zero(self):
+        """A trace of all zeros should remain all zeros (no crash)."""
+        traces = np.zeros((1, 100), dtype=np.float32)
+        normed = normalize_traces(traces, method='zscore')
+        assert np.all(normed == 0.0)
+
+    def test_invalid_method_raises_error(self):
+        """An unrecognized method name should raise ValueError."""
+        with pytest.raises(ValueError):
+            normalize_traces(np.zeros((2, 10)), method='bad')
