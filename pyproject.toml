@@ -1,26 +1,23 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
 
 [project]
-name = "seismoai"
+name = "seismoai-io-USM-JZB"
 version = "0.1.0"
-description = "A Python package for seismic data analysis and visualization"
+description = "SeismoAI I/O module - load and prepare SGY seismic files"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
 authors = [
-    {name = "M Usman Bin Younas", email = "your.email@example.com"},
+    {name = "M Usman Bin Younas"},
+    {name = "Jazib Noel"},
 ]
 dependencies = [
-    # Add your project dependencies here
-]
-readme = "README.md"
-
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "black",
-    "flake8",
+    "segyio>=1.9",
+    "numpy>=1.21",
+    "pandas>=1.3",
 ]
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["seismoai*", "seismoai_io*", "seismoai_viz*"]
+include = ["seismoai_io*"]
