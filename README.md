@@ -1,60 +1,67 @@
-# SeismoAI
+# SeismoAI — Seismic Data Processing Library
 
-A Python package for seismic data analysis and visualization.
+A Python library for loading, visualizing, and analyzing seismic data
+from SEG-Y files. Built as part of the MLOps course project.
 
-## Features
+## Dataset
 
-- Seismic data I/O operations (`seismoai_io`)
-- Seismic data visualization (`seismoai_viz`)
+Utah FORGE 2D Seismic Survey (2017):
+- 166 SGY files, each with 167 traces x 4,001 samples
+- 1 ms sample interval (4 seconds per trace)
+- Little-endian byte order (IEEE float format)
 
 ## Installation
 
-### From source
-```bash
-git clone <repository-url>
-cd seismoai
-pip install -e .
-```
+\`\`\`bash
+pip install seismoai-io-USM-JZB
+pip install seismoai_viz #created by Jawad Ali
+\`\`\`
 
-### Development setup
-```bash
-pip install -e ".[dev]"
-```
+## Quick Start
 
-## Usage
+\`\`\`python
+from seismoai_io import load_sgy, normalize_traces
+from seismoai_viz import plot_gather, plot_trace, plot_spectrum
 
-```python
-import seismoai_io
-import seismoai_viz
+# Load a seismic file
+data = load_sgy("path/to/file.sgy")
+print(f"Loaded {data['n_traces']} traces")
 
-# Load seismic data
-data = seismoai_io.load_data("data/27_...sgy")
+# Normalize amplitudes
+normed = normalize_traces(data['traces'], method='zscore')
 
 # Visualize
-seismoai_viz.plot_seismic(data)
-```
+fig = plot_gather(normed, title="My Seismic Data")
+fig = plot_trace(data['traces'][50], trace_index=50)
+fig = plot_spectrum(data['traces'][50])
+\`\`\`
 
-## Project Structure
+## Modules
 
-```
-seismoai/
-├── data/                 # Seismic data files (.sgy)
-├── seismoai_io/          # I/O operations package
-├── seismoai_viz/         # Visualization package
-├── pyproject.toml        # Project configuration
-├── README.md            # This file
-├── requirements.txt     # Additional requirements
-└── .gitignore          # Git ignore rules
-```
+### seismoai_io
+- \`load_sgy(filepath)\` — Load a single .sgy file
+- \`load_folder(folder_path)\` — Load all .sgy files from a directory
+- \`normalize_traces(traces, method)\` — Normalize amplitudes
 
-## Contributing
+### seismoai_viz
+- \`plot_gather(traces, ...)\` — 2D seismic gather image
+- \`plot_trace(trace, ...)\` — Single trace waveform
+- \`plot_spectrum(trace, ...)\` — Frequency spectrum (FFT)
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests: `pytest`
-5. Submit a pull request
+## Running Tests
+
+\`\`\`bash
+pytest seismoai_io/tests/ -v
+pytest seismoai_viz/tests/ -v
+\`\`\`
+
+## Team
+
+- Member 1 (M Usman Younas) — seismoai_io: load_sgy, load_folder
+- Member 2 (Jazib Novel) — seismoai_io: normalize_traces
+- Member 3 (Jawad Ali) — seismoai_viz: plot_gather, plot_trace
+- Member 4 (Wasif Ali Pervez) — seismoai_viz: plot_spectrum
 
 ## License
 
-[Add license information here]
+MIT
