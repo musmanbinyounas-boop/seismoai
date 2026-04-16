@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "seismoai-viz-jawad-wasif"
+version = "0.1.0"
+description = "SeismoAI visualization - plot seismic gathers and spectra"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Jawad Ali"},
+    {name = "Wasif Ali Pervez"},
+]
+dependencies = [
+    "numpy>=1.21",
+    "matplotlib>=3.5",
+]
+
+[tool.setuptools.packages.find]
+include = ["seismoai_viz*"]
