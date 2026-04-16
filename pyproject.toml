@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "seismoai-io-USM-JZB"
+name = "seismoai-io-USM-JZB2"
 version = "0.1.0"
 description = "SeismoAI I/O module - load and prepare SGY seismic files"
 readme = "README.md"
