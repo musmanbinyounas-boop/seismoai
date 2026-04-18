@@ -58,7 +58,7 @@ pytest seismoai_viz/tests/ -v
 ## Team
 
 - Member 1 (M Usman Younas) — seismoai_io: load_sgy, load_folder
-- Member 2 (Jazib Novel) — seismoai_io: normalize_traces
+- Member 2 (Jazib Noel) — seismoai_io: normalize_traces
 - Member 3 (Jawad Ali) — seismoai_viz: plot_gather, plot_trace
 - Member 4 (Wasif Ali Pervez) — seismoai_viz: plot_spectrum
 
